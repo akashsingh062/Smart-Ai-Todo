@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'; // Add useCallback
+import { useState, useEffect, useCallback } from 'react';
 import { Todo, FilterType, SortType } from '../types/todo';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useAuth } from '../contexts/AuthContext'; // Ensure useAuth is imported
+import { useAuth } from '../contexts/AuthContext';
 
 export const useTodos = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -11,20 +11,16 @@ export const useTodos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Get user, token, and the authentication loading state from AuthContext
-  const { user, token, loading: authLoading } = useAuth(); 
+  const { user, token, loading: authLoading } = useAuth();
 
-  // Memoize the fetchTodos function to prevent unnecessary re-creations
   const fetchTodos = useCallback(async () => {
-    // Only attempt to fetch if authentication is no longer loading AND a user and token are present.
-    // This prevents fetching before the auth context has fully initialized or after logout.
     if (authLoading || !user || !token) {
-        setTodos([]); // Clear todos if user logs out or is not authenticated
-        setLoading(false); 
+        setTodos([]);
+        setLoading(false);
         return;
     }
 
-    setLoading(true); // Indicate that we are loading todos
+    setLoading(true);
     try {
       const response = await axios.get('/todos');
       const todosWithDates = response.data.map((todo: any) => ({
@@ -34,24 +30,31 @@ export const useTodos = () => {
         dueDate: todo.dueDate ? new Date(todo.dueDate) : undefined,
       }));
       setTodos(todosWithDates);
-    } catch (error) {
-      // Only show an error toast if it's a genuine failure *after* we expect auth to be ready.
-      // This prevents toasts from initial unauthenticated attempts during app startup.
-      if (!authLoading && user && token) { // Check if we should genuinely report this error
-        console.error('Failed to load todos:', error); // Log the full error to console for debugging
-        toast.error('Failed to load todos');
+      // Removed toast.success here as it might be annoying on every load
+    } catch (error: any) { // Type the error as 'any' for easier access to properties like response.status
+      // Only show toast.error if the response status is not 401 (handled by login redirect)
+      // or if it's not due to initial auth check.
+      // And only if it's a real network/server error that means data couldn't be loaded.
+      if (
+          !authLoading && // Authentication check is complete
+          user && token && // User is supposed to be authenticated
+          (error.response && error.response.status !== 401) // Not a 401, which might be handled by AuthContext
+          // or a general network error (no error.response)
+      ) {
+          console.error('Failed to load todos after successful auth:', error);
+          toast.error('Failed to load todos');
+      } else if (!error.response) { // Generic network error (e.g., no internet, backend completely down)
+          console.error('Network error or backend unreachable when fetching todos:', error);
+          toast.error('Failed to load todos: Network or Server Issue');
       }
     } finally {
-      setLoading(false); // Always set loading to false when done
+      setLoading(false);
     }
-  }, [user, token, authLoading]); // Dependencies for useCallback: re-create fetchTodos if user, token, or authLoading changes
+  }, [user, token, authLoading]);
 
-  // Use useEffect to call fetchTodos whenever the memoized fetchTodos function changes
-  // (which happens when its dependencies: user, token, authLoading change)
   useEffect(() => {
     fetchTodos();
-  }, [fetchTodos]); // Dependency for useEffect is the memoized fetchTodos function itself
-
+  }, [fetchTodos]);
 
   // ... (rest of your useTodos hook code remains the same)
 
