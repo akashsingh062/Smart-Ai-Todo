@@ -27,6 +27,11 @@ export const useAuth = () => {
   return context;
 };
 
+// Define your API base URL
+const API_BASE_URL = import.meta.env.PROD
+  ? 'https://smart-ai-todo.onrender.com/api' // Your deployed backend URL
+  : 'http://localhost:3001/api'; // Your local backend URL
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
@@ -39,6 +44,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       delete axios.defaults.headers.common['Authorization'];
     }
+    // Set the base URL for all axios requests
+    axios.defaults.baseURL = API_BASE_URL; // Add this line
   }, [token]);
 
   // Check if user is authenticated on app load
@@ -46,7 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const checkAuth = async () => {
       if (token) {
         try {
-          const response = await axios.get('http://localhost:3001/api/auth/me');
+          const response = await axios.get('/auth/me'); // Changed to relative path
           setUser(response.data.user);
         } catch (error) {
           localStorage.removeItem('token');
@@ -61,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', {
+      const response = await axios.post('/auth/login', { // Changed to relative path
         email,
         password,
       });
@@ -80,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (username: string, email: string, password: string) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/register', {
+      const response = await axios.post('/auth/register', { // Changed to relative path
         username,
         email,
         password,
