@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Todo, FilterType, SortType } from '../types/todo';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useAuth } from '../contexts/AuthContext'; // Import useAuth
 
 export const useTodos = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -10,10 +11,17 @@ export const useTodos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const { user } = useAuth(); // Get the user from AuthContext
+
   // Load todos from server
   const fetchTodos = async () => {
+    // Only attempt to fetch if a user is logged in
+    if (!user) {
+        setLoading(false);
+        return;
+    }
+
     try {
-      // Changed from 'http://localhost:3001/api/todos' to '/todos'
       const response = await axios.get('/todos');
       const todosWithDates = response.data.map((todo: any) => ({
         ...todo,
@@ -31,11 +39,12 @@ export const useTodos = () => {
 
   useEffect(() => {
     fetchTodos();
-  }, []);
+  }, [user]); // Add `user` to the dependency array
+
+  // ... (rest of the hook code: addTodo, toggleTodo, deleteTodo, updateTodo, clearCompleted, generateSubtasks, filteredAndSortedTodos, stats)
 
   const addTodo = async (text: string, priority: Todo['priority'] = 'medium', category: string = 'General', dueDate?: Date) => {
     try {
-      // Changed from 'http://localhost:3001/api/todos' to '/todos'
       const response = await axios.post('/todos', {
         text: text.trim(),
         priority,
@@ -62,7 +71,6 @@ export const useTodos = () => {
       const todo = todos.find(t => t.id === id);
       if (!todo) return;
 
-      // Changed from `http://localhost:3001/api/todos/${id}` to `/todos/${id}`
       const response = await axios.put(`/todos/${id}`, {
         completed: !todo.completed
       });
@@ -81,7 +89,6 @@ export const useTodos = () => {
 
   const deleteTodo = async (id: string) => {
     try {
-      // Changed from `http://localhost:3001/api/todos/${id}` to `/todos/${id}`
       await axios.delete(`/todos/${id}`);
       setTodos(prev => prev.filter(todo => todo.id !== id));
       toast.success('Task deleted successfully!');
@@ -92,7 +99,6 @@ export const useTodos = () => {
 
   const updateTodo = async (id: string, updates: Partial<Todo>) => {
     try {
-      // Changed from `http://localhost:3001/api/todos/${id}` to `/todos/${id}`
       const response = await axios.put(`/todos/${id}`, updates);
       
       setTodos(prev =>
@@ -113,7 +119,6 @@ export const useTodos = () => {
 
   const clearCompleted = async () => {
     try {
-      // Changed from 'http://localhost:3001/api/todos/completed/clear' to '/todos/completed/clear'
       await axios.delete('/todos/completed/clear');
       setTodos(prev => prev.filter(todo => !todo.completed));
       toast.success('Completed tasks cleared!');
@@ -124,7 +129,6 @@ export const useTodos = () => {
 
   const generateSubtasks = async (todoId: string, taskText: string) => {
     try {
-      // Changed from 'http://localhost:3001/api/ai/subtasks' to '/ai/subtasks'
       const response = await axios.post('/ai/subtasks', {
         todoId,
         taskText
@@ -146,14 +150,11 @@ export const useTodos = () => {
     }
   };
 
-  // Filter and sort todos
   const filteredAndSortedTodos = todos
     .filter(todo => {
-      // Apply filter
       if (filter === 'active' && todo.completed) return false;
       if (filter === 'completed' && !todo.completed) return false;
       
-      // Apply search
       if (searchTerm && !todo.text.toLowerCase().includes(searchTerm.toLowerCase())) {
         return false;
       }
