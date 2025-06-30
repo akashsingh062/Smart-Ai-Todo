@@ -13,7 +13,8 @@ export const useTodos = () => {
   // Load todos from server
   const fetchTodos = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/todos');
+      // Changed from 'http://localhost:3001/api/todos' to '/todos'
+      const response = await axios.get('/todos');
       const todosWithDates = response.data.map((todo: any) => ({
         ...todo,
         id: todo._id,
@@ -34,7 +35,8 @@ export const useTodos = () => {
 
   const addTodo = async (text: string, priority: Todo['priority'] = 'medium', category: string = 'General', dueDate?: Date) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/todos', {
+      // Changed from 'http://localhost:3001/api/todos' to '/todos'
+      const response = await axios.post('/todos', {
         text: text.trim(),
         priority,
         category,
@@ -60,7 +62,8 @@ export const useTodos = () => {
       const todo = todos.find(t => t.id === id);
       if (!todo) return;
 
-      const response = await axios.put(`http://localhost:3001/api/todos/${id}`, {
+      // Changed from `http://localhost:3001/api/todos/${id}` to `/todos/${id}`
+      const response = await axios.put(`/todos/${id}`, {
         completed: !todo.completed
       });
 
@@ -78,7 +81,8 @@ export const useTodos = () => {
 
   const deleteTodo = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3001/api/todos/${id}`);
+      // Changed from `http://localhost:3001/api/todos/${id}` to `/todos/${id}`
+      await axios.delete(`/todos/${id}`);
       setTodos(prev => prev.filter(todo => todo.id !== id));
       toast.success('Task deleted successfully!');
     } catch (error) {
@@ -88,7 +92,8 @@ export const useTodos = () => {
 
   const updateTodo = async (id: string, updates: Partial<Todo>) => {
     try {
-      const response = await axios.put(`http://localhost:3001/api/todos/${id}`, updates);
+      // Changed from `http://localhost:3001/api/todos/${id}` to `/todos/${id}`
+      const response = await axios.put(`/todos/${id}`, updates);
       
       setTodos(prev =>
         prev.map(todo =>
@@ -108,7 +113,8 @@ export const useTodos = () => {
 
   const clearCompleted = async () => {
     try {
-      await axios.delete('http://localhost:3001/api/todos/completed/clear');
+      // Changed from 'http://localhost:3001/api/todos/completed/clear' to '/todos/completed/clear'
+      await axios.delete('/todos/completed/clear');
       setTodos(prev => prev.filter(todo => !todo.completed));
       toast.success('Completed tasks cleared!');
     } catch (error) {
@@ -118,7 +124,8 @@ export const useTodos = () => {
 
   const generateSubtasks = async (todoId: string, taskText: string) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/ai/subtasks', {
+      // Changed from 'http://localhost:3001/api/ai/subtasks' to '/ai/subtasks'
+      const response = await axios.post('/ai/subtasks', {
         todoId,
         taskText
       });

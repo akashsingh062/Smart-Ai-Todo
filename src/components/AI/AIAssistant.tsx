@@ -17,7 +17,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onSubtasksGenerated })
   const getSummary = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/ai/summarize');
+      // Changed from 'http://localhost:3001/api/ai/summarize' to '/ai/summarize'
+      const response = await axios.post('/ai/summarize');
       setSummary(response.data.summary);
       toast.success('Summary generated!');
     } catch (error) {
@@ -30,7 +31,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onSubtasksGenerated })
   const getPrioritization = async () => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/ai/prioritize');
+      // Changed from 'http://localhost:3001/api/ai/prioritize' to '/ai/prioritize'
+      const response = await axios.post('/ai/prioritize');
       setPrioritization(response.data.suggestions);
       toast.success('Prioritization suggestions generated!');
     } catch (error) {
@@ -43,7 +45,8 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onSubtasksGenerated })
   const generateSubtasks = async (taskText: string) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/ai/subtasks', {
+      // Changed from 'http://localhost:3001/api/ai/subtasks' to '/ai/subtasks'
+      const response = await axios.post('/ai/subtasks', {
         taskText
       });
       if (onSubtasksGenerated) {
