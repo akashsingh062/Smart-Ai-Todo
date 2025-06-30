@@ -1,5 +1,9 @@
 # Smart AI Todo Manager
 
+## 🌐 Live Demo
+
+👉 [Smart AI Todo](https://smart-ai-todo.onrender.com/) — Deployed on Render
+
 A powerful, intelligent, and modern full-stack task manager with AI-powered assistance to help you plan, prioritize, and execute your daily tasks with ease.
 
 ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
@@ -92,9 +96,6 @@ PORT=3001
 ```bash
 npm run dev
 ```
-
-- Backend: `http://localhost:3001`
-- Frontend: `http://localhost:5173`
 
 ---
 
