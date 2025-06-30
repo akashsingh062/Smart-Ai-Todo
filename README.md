@@ -4,8 +4,8 @@
 
 <a href="https://smart-ai-todo.onrender.com/" target="_blank">
   <img src="https://img.shields.io/badge/Smart%20AI%20Todo-Live-green?style=for-the-badge" alt="Smart AI Todo Live">
-</a>
-##
+## </a>
+
 A powerful, intelligent, and modern full-stack task manager with AI-powered assistance to help you plan, prioritize, and execute your daily tasks with ease.
 
 ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
