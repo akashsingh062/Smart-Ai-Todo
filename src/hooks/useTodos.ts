@@ -30,20 +30,15 @@ export const useTodos = () => {
         dueDate: todo.dueDate ? new Date(todo.dueDate) : undefined,
       }));
       setTodos(todosWithDates);
-      // Removed toast.success here as it might be annoying on every load
-    } catch (error: any) { // Type the error as 'any' for easier access to properties like response.status
-      // Only show toast.error if the response status is not 401 (handled by login redirect)
-      // or if it's not due to initial auth check.
-      // And only if it's a real network/server error that means data couldn't be loaded.
+    } catch (error: any) { 
       if (
-          !authLoading && // Authentication check is complete
-          user && token && // User is supposed to be authenticated
-          (error.response && error.response.status !== 401) // Not a 401, which might be handled by AuthContext
-          // or a general network error (no error.response)
+          !authLoading &&
+          user && token && 
+          (error.response && error.response.status !== 401) 
       ) {
           console.error('Failed to load todos after successful auth:', error);
           toast.error('Failed to load todos');
-      } else if (!error.response) { // Generic network error (e.g., no internet, backend completely down)
+      } else if (!error.response) { 
           console.error('Network error or backend unreachable when fetching todos:', error);
           toast.error('Failed to load todos: Network or Server Issue');
       }
@@ -55,11 +50,6 @@ export const useTodos = () => {
   useEffect(() => {
     fetchTodos();
   }, [fetchTodos]);
-
-  // ... (rest of your useTodos hook code remains the same)
-
-  // All other functions (addTodo, toggleTodo, deleteTodo, updateTodo, clearCompleted, generateSubtasks)
-  // and returned values remain the same as in your previous useTodos.ts file.
 
   const addTodo = async (text: string, priority: Todo['priority'] = 'medium', category: string = 'General', dueDate?: Date) => {
     try {
